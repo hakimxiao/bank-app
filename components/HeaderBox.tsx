@@ -1,6 +1,3 @@
-import { space } from "postcss/lib/list";
-import React from "react";
-
 const HeaderBox = ({
   type = "title",
   title,
