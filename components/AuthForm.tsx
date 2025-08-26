@@ -40,6 +40,7 @@ const AuthForm = ({ type }: { type: string }) => {
       // SIGN UP WITH APPWRITE & CREATE PLAIN TOKEN
       if (type === "sign-up") {
         const newUser = await signUp(data);
+
         setUser(newUser);
       }
 
@@ -108,7 +109,7 @@ const AuthForm = ({ type }: { type: string }) => {
 
                   <CustomInputForm
                     control={form.control}
-                    name="address"
+                    name="address1"
                     label="Address"
                     placeholder="Enter your spesific address"
                   />

@@ -1,7 +1,6 @@
 import { logoutAccount } from "@/lib/actions/user.action";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 const Footer = ({ user, type = "desktop" }: FooterProps) => {
   const router = useRouter();
@@ -9,10 +8,7 @@ const Footer = ({ user, type = "desktop" }: FooterProps) => {
   const handleLogoutAccount = async () => {
     const loggedOut = await logoutAccount();
 
-    if (loggedOut) {
-      router.push("/sign-in");
-      toast("Berhasil Logout Account");
-    }
+    if (loggedOut) router.push("/sign-in");
   };
 
   return (

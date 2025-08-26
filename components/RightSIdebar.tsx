@@ -31,7 +31,7 @@ const RightSIdebar = ({ user, transactions, banks }: RightSidebarProps) => {
           </Link>
         </div>
 
-        {banks.length > 0 && (
+        {banks?.length > 0 && (
           <div className="relative flex flex-1 flex-col items-center justify-center gap-5">
             <div className="relative z-10">
               <BankCard

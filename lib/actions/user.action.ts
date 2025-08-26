@@ -2,49 +2,58 @@
 
 import { cookies } from "next/headers";
 import { createAdminClient, createSessionClient } from "../appwrite";
-import { ID } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 import { parseStringify } from "../utils";
+
+export const getUserInfo = async ({ userId }: getUserInfoProps) => {
+  try {
+    const { database } = await createAdminClient();
+
+    const user = await database.listDocuments(
+      process.env.APPWRITE_DATABASE_ID!,
+      process.env.APPWRITE_USER_COLLECTION_ID!,
+      [Query.equal('userId', [userId])]
+    )
+
+    return parseStringify(user.documents[0]);
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 export const signIn = async({email, password}: signInProps) => {
     try {
-        const { account } = await createAdminClient();
-        const response = await account.createEmailPasswordSession(email, password);
+    const { account } = await createAdminClient();
+    
+    const response = await account.createEmailPasswordSession(email, password);
 
-        return parseStringify(response);
- 
-    } catch (error) {
-        console.log("Error", error);
-    }
+    return parseStringify(response);
+  } catch (error) {
+    console.error('Error', error);
+  }
 }
 
 export const signUp = async(userData: SignUpParams) => {
-    const { email, firstName, lastName, password } = userData;
+  const {email, password, firstName, lastName} = userData;
 
-    let newUserAccount;
+   try{
+    const {account} = await createAdminClient();
+    const newUserAccount = await account.create(
+      ID.unique(), 
+      email, 
+      password, 
+      `${firstName} ${lastName}`
+    );
 
-    try {
-      const { account } = await createAdminClient();
+    const session = await account.createEmailPasswordSession(email, password);
+    cookies().set("appwrite-session", session.secret, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true
+    });
 
-      newUserAccount = await account.create(
-        ID.unique(),
-        email,
-        password,
-        `${firstName} ${lastName}`
-      );
-
-      if (!newUserAccount) throw new Error("Error creating user");
-
-      const session = await account.createEmailPasswordSession(email, password);
-
-      cookies().set("appwrite-session", session.secret, {
-        path: "/",
-        httpOnly: true,
-        sameSite: "strict",
-        secure: true,
-      });
-
-      return parseStringify(newUserAccount);
-
+    return parseStringify(newUserAccount);
     } catch (error) {
       console.log(error);
 
